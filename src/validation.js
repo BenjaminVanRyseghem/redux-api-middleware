@@ -22,15 +22,8 @@ function isRSAA(action) {
  * @returns {boolean}
  */
 function isValidTypeDescriptor(obj) {
-  const validKeys = ['type', 'payload', 'meta'];
-
   if (!isPlainObject(obj)) {
     return false;
-  }
-  for (let key in obj) {
-    if (!~validKeys.indexOf(key)) {
-      return false;
-    }
   }
   if (!('type' in obj)) {
     return false;

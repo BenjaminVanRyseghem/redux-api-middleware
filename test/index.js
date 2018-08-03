@@ -48,15 +48,6 @@ test('isValidTypeDescriptor must identify conformant type descriptors', t => {
     'type descriptors must be plain JavaScript objects'
   );
 
-  var descriptor2 = {
-    type: '',
-    invalidKey: ''
-  };
-  t.notOk(
-    isValidTypeDescriptor(descriptor2),
-    'type descriptors must not have properties other than type, payload and meta'
-  );
-
   var descriptor3 = {};
   t.notOk(
     isValidTypeDescriptor(descriptor3),
