@@ -42,19 +42,20 @@ function normalizeTypeDescriptors(types) {
   if (typeof successType === 'string' || typeof successType === 'symbol') {
     successType = { type: successType };
   }
-  successType = {
-    payload: (action, state, res) => getJSON(res),
-    ...successType
-  };
+
+  successType.payload =
+    successType.payload || ((action, state, res) => getJSON(res));
 
   if (typeof failureType === 'string' || typeof failureType === 'symbol') {
     failureType = { type: failureType };
   }
-  failureType = {
-    payload: (action, state, res) =>
-      getJSON(res).then(json => new ApiError(res.status, res.statusText, json)),
-    ...failureType
-  };
+
+  failureType.payload =
+    failureType.payload ||
+    ((action, state, res) =>
+      getJSON(res).then(
+        json => new ApiError(res.status, res.statusText, json)
+      ));
 
   return [requestType, successType, failureType];
 }
@@ -70,21 +71,35 @@ function normalizeTypeDescriptors(types) {
  */
 async function actionWith(descriptor, args) {
   try {
-    descriptor.payload = await (typeof descriptor.payload === 'function'
-      ? descriptor.payload(...args)
-      : descriptor.payload);
+    if (typeof descriptor.payload === 'function') {
+      let value = await descriptor.payload(...args);
+      descriptor.payload = () => value;
+    } else {
+      descriptor.payload = await descriptor.payload;
+    }
   } catch (e) {
-    descriptor.payload = new InternalError(e.message);
+    if (typeof descriptor.payload === 'function') {
+      descriptor.payload = () => new InternalError(e.message);
+    } else {
+      descriptor.payload = new InternalError(e.message);
+    }
     descriptor.error = true;
   }
 
   try {
-    descriptor.meta = await (typeof descriptor.meta === 'function'
-      ? descriptor.meta(...args)
-      : descriptor.meta);
+    if (typeof descriptor.meta === 'function') {
+      let value = await descriptor.meta(...args);
+      descriptor.meta = () => value;
+    } else {
+      descriptor.meta = await descriptor.meta;
+    }
   } catch (e) {
     delete descriptor.meta;
-    descriptor.payload = new InternalError(e.message);
+    if (typeof descriptor.payload === 'function') {
+      descriptor.payload = () => new InternalError(e.message);
+    } else {
+      descriptor.payload = new InternalError(e.message);
+    }
     descriptor.error = true;
   }
 

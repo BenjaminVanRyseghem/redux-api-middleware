@@ -793,7 +793,7 @@ test('actionWith', async t => {
   };
   const fsa3 = await actionWith(descriptor3, passedArgs);
   t.equal(
-    fsa3.payload.message,
+    fsa3.payload().message,
     'error in payload function',
     'must set FSA payload property to an error if a custom payload function throws'
   );
@@ -989,7 +989,7 @@ test('apiMiddleware must dispatch an error request FSA when [RSAA].bailout fails
       'dispatched FSA has correct payload property'
     );
     t.equal(
-      action.meta,
+      action.meta(),
       'someMeta',
       'dispatched FSA has correct meta property'
     );
@@ -1423,7 +1423,7 @@ test('apiMiddleware must use payload property of request type descriptor when it
         'request FSA has correct meta property'
       );
       t.equal(
-        action.payload,
+        action.payload(),
         'requestPayload',
         'request FSA has correct payload property'
       );
@@ -1477,7 +1477,7 @@ test('apiMiddleware must use meta property of request type descriptor when it is
     if (action.type === 'REQUEST') {
       t.pass('request FSA passed to the next handler');
       t.equal(
-        action.meta,
+        action.meta(),
         'requestMeta',
         'request FSA has correct meta property'
       );
@@ -1538,7 +1538,7 @@ test('apiMiddleware must dispatch a success FSA on a successful API call with a 
       case 'SUCCESS':
         t.pass('success FSA passed to the next handler');
         t.deepEqual(
-          action.payload,
+          action.payload(),
           { username: 'Alice' },
           'success FSA has correct payload property'
         );
@@ -1600,7 +1600,7 @@ test('apiMiddleware must dispatch a success FSA on a successful API call with an
       case 'SUCCESS':
         t.pass('success FSA passed to the next handler');
         t.deepEqual(
-          action.payload,
+          action.payload(),
           {},
           'success FSA has correct payload property'
         );
@@ -1668,7 +1668,7 @@ test('apiMiddleware must dispatch a success FSA with an error state on a success
       case 'SUCCESS':
         t.pass('success FSA passed to the next handler');
         t.deepEqual(
-          action.payload,
+          action.payload(),
           error,
           'success FSA has correct payload property'
         );
@@ -1730,7 +1730,7 @@ test('apiMiddleware must dispatch a success FSA on a successful API call with a 
       case 'SUCCESS':
         t.pass('success FSA passed to the next handler');
         t.deepEqual(
-          typeof action.payload,
+          typeof action.payload(),
           'undefined',
           'success FSA has correct payload property'
         );
@@ -1796,7 +1796,7 @@ test('apiMiddleware must dispatch a failure FSA on an unsuccessful API call with
       case 'FAILURE':
         t.pass('failure FSA passed to the next handler');
         t.deepEqual(
-          action.payload.response,
+          action.payload().response,
           { error: 'Resource not found' },
           'failure FSA has correct payload property'
         );
@@ -1858,7 +1858,7 @@ test('apiMiddleware must dispatch a failure FSA on an unsuccessful API call with
       case 'FAILURE':
         t.pass('failure FSA passed to the next handler');
         t.deepEqual(
-          action.payload.response,
+          action.payload().response,
           {},
           'failure FSA has correct payload property'
         );
@@ -1985,7 +1985,7 @@ test('apiMiddleware must use a [RSAA].fetch custom fetch wrapper when present', 
     switch (action.type) {
       case 'SUCCESS':
         t.deepEqual(
-          action.payload,
+          action.payload(),
           {
             ...responseBody,
             foo: 'bar'
@@ -2028,10 +2028,10 @@ test('apiMiddleware must dispatch correct error payload when custom fetch wrappe
   const doNext = action => {
     switch (action.type) {
       case 'FAILURE':
-        t.ok(action.payload instanceof Error);
+        t.ok(action.payload() instanceof Error);
         t.pass('error action dispatched');
         t.deepEqual(
-          action.payload.response,
+          action.payload().response,
           {
             foo: 'bar'
           },
